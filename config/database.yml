@@ -1,0 +1,57 @@
+# PostgreSQL. Versions 9.3 and up are supported.
+#
+# Install the pg driver:
+#   gem install pg
+# On macOS with Homebrew:
+#   gem install pg -- --with-pg-config=/usr/local/bin/pg_config
+# On macOS with MacPorts:
+#   gem install pg -- --with-pg-config=/opt/local/lib/postgresql84/bin/pg_config
+# On Windows:
+#   gem install pg
+#       Choose the win32 build.
+#       Install PostgreSQL and put its /bin directory on your path.
+#
+# Configure Using Gemfile
+# gem 'pg'
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  primary:
+    <<: *default
+    database: australian_address_api_development
+  gnaf:
+    <<: *default
+    host: localhost
+    database: gnaf
+    user: gnaf
+    password: gnaf
+    port: 5433
+
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  primary:
+    <<: *default
+    database: australian_address_api_test
+  gnaf:
+    <<: *default
+    database: gnaf_test
+
+production:
+  primary:
+    <<: *default
+    database: australian_address_api_production
+    password:
+  gnaf:
+    <<: *default
+    database: gnaf_production
+    password: <%= ENV['AUSTRALIAN_ADDRESS_API_DATABASE_PASSWORD'] %>
+
