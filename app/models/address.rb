@@ -22,6 +22,20 @@ class Address < ApplicationRecord
 
   scope :search_import, -> { where("confidence > 0") }
 
+  def self.reverse_geocode(longitude, latitude)
+    Address.search(
+      where: {
+        location: {
+          near: {
+            lon: longitude.to_s,
+            lat: latitude.to_s
+          },
+          within: "0.1m"
+        }
+      }
+    )
+  end
+
   def self.bulk_reindex
     uncached do
       counter = 0
