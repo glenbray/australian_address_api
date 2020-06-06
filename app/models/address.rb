@@ -20,6 +20,25 @@ class Address < ApplicationRecord
       synonyms: STREET_SYNONYMS,
       locations: [:location]
 
+  scope :search_import, -> { where("confidence > 0") }
+
+  def self.bulk_reindex
+    uncached do
+      counter = 0
+      batch_size = 2000
+
+      search_import.find_in_batches(batch_size: batch_size) do |batch|
+        counter += batch_size
+
+        searchkick_index.import(batch)
+
+        Rails.logger.info '==================================='
+        Rails.logger.info "processed records up to #{counter}"
+        Rails.logger.info '==================================='
+      end
+    end
+  end
+
   def full_address
     [address.titlecase, locality_name.titlecase, state, postcode].join(' ')
   end
@@ -31,8 +50,8 @@ class Address < ApplicationRecord
       state: state.downcase,
       postcode: postcode,
       location: {
-        latitude: latitude,
-        longitude: longitude
+        lat: latitude.to_s,
+        lon: longitude.to_s
       }
     }
   end

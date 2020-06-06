@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  namespace :address do
-    resources :autocomplete, only: [:index]
-  end
+  get "/address/autocomplete", controller: :address_autocomplete, action: :index
 end
 
