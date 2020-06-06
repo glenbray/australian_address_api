@@ -1,4 +1,5 @@
-json.address address["address"]
+json.full_address address.full_address
+json.street_address address["address"]
 json.lot_number address["lot_number"]
 json.flat_number address["flat_number"]
 json.level_number address["level_number"]

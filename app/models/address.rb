@@ -7,7 +7,8 @@ class Address < ApplicationRecord
     ['close','cl'],
     ['crest','crst'],
     ['drive','dr'],
-    ['avenue',' av']
+    ['avenue',' av'],
+    ['highway',' hwy']
   ]
 
   connects_to database: {reading: :gnaf, writing: :gnaf}
@@ -22,15 +23,17 @@ class Address < ApplicationRecord
 
   scope :search_import, -> { where("confidence > 0") }
 
-  def self.reverse_geocode(longitude, latitude)
+  def self.reverse_geocode(longitude, latitude, within)
+    within ||= 1
+
     Address.search(
       where: {
         location: {
           near: {
-            lon: longitude.to_s,
-            lat: latitude.to_s
+            lon: longitude.to_f,
+            lat: latitude.to_f
           },
-          within: "0.1m"
+          within: "#{within}m",
         }
       }
     )
@@ -51,6 +54,10 @@ class Address < ApplicationRecord
         Rails.logger.info '==================================='
       end
     end
+  end
+
+  def should_index?
+    confidence > 0
   end
 
   def full_address
